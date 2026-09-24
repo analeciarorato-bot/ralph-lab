@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Receita por regiao e mes</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<h1>Receita mensal por regiao</h1>
+<canvas id="grafico" width="900" height="450"></canvas>
+<p id="conclusao">A receita total das vendas com loja identificada, de 2026-01 a 2026-06, foi de R$ 931.274,06. A regiao lider e Sudeste, com R$ 265.077,49 (28.5% do total), seguida por Nordeste (R$ 261.862,76) e Centro-Oeste (R$ 258.323,97). A regiao com menor receita e Sul, com R$ 146.009,84 (15.7% do total). O melhor mes foi 2026-02 (R$ 169.800,88) e o pior foi 2026-03 (R$ 142.934,74). Os valores consideram apenas o inner join: as vendas orfas (id_loja 999) e a loja sem vendas ficam fora deste relatorio.</p>
+<script>
+const meses = ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"];
+const series = [{"regiao": "Centro-Oeste", "valores": [44144.42, 48227.94, 41682.96, 38855.88, 46672.07, 38740.7]}, {"regiao": "Nordeste", "valores": [46222.85, 48042.96, 45850.7, 44053.04, 35371.5, 42321.71]}, {"regiao": "Sudeste", "valores": [44767.33, 48544.11, 35816.56, 46281.64, 41083.43, 48584.42]}, {"regiao": "Sul", "valores": [27703.36, 24985.87, 19584.52, 22976.51, 25094.42, 25665.16]}];
+new Chart(document.getElementById("grafico"), {
+  type: "line",
+  data: {
+    labels: meses,
+    datasets: series.map(s => ({ label: s.regiao, data: s.valores, tension: 0.2 }))
+  },
+  options: { scales: { y: { title: { display: true, text: "Receita (R$)" } } } }
+});
+</script>
+</body>
+</html>

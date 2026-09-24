@@ -1,3 +1,4 @@
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -8,6 +9,7 @@ import pytest
 ROOT = Path(__file__).resolve().parent.parent
 VENDAS_LOJAS_CSV = ROOT / "vendas_lojas.csv"
 PIVOT_RECEITA_CSV = ROOT / "pivot_receita.csv"
+INDEX_HTML = ROOT / "index.html"
 
 EXPECTED_LINE_COUNT = 420
 EXPECTED_RECEITA_TOTAL = 931274.06
@@ -46,3 +48,16 @@ def test_pivot_total_and_format():
     for line in PIVOT_RECEITA_CSV.read_text(encoding="utf-8").splitlines()[1:]:
         for cell in line.split(",")[1:]:
             assert len(cell.split(".")[1]) == 2
+
+
+def test_index_html_canvas_chartjs_and_conclusion():
+    assert INDEX_HTML.exists()
+    html = INDEX_HTML.read_text(encoding="utf-8")
+    assert "<canvas" in html
+    assert "https://cdn.jsdelivr.net/npm/chart.js" in html
+    paragraphs = re.findall(r"<p[^>]*>(.*?)</p>", html, flags=re.S)
+    conclusao = max(paragraphs, key=len)
+    assert len(conclusao) >= 300
+    assert "Sudeste" in conclusao
+    assert "R$ 265.077,49" in conclusao
+    assert "R$ 931.274,06" in conclusao

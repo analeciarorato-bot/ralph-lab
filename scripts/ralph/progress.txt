@@ -28,3 +28,13 @@ Started: Thu Sep 24 20:09:45     2026
   - build_pivot_receita(vendas_lojas) returns a DataFrame with `regiao` as a regular column, so US-003 can reuse it directly for Chart.js datasets (one per row, labels = the month columns).
   - Test suite now has 4 tests, meeting the PRD "at least 4 tests" bar.
 ---
+
+## [2026-09-24] - US-003
+- Added build_conclusao(), build_index_html() and format_brl() to pipeline.py; main() now writes index.html (root) with pivot data embedded as JSON, a Chart.js line chart (CDN jsdelivr, one dataset per regiao, X = months) and a <p id="conclusao"> (~480 chars) built from the pivot totals (leader Sudeste R$ 265.077,49; total R$ 931.274,06).
+- Files changed: pipeline.py, tests/test_pipeline.py (new test: canvas, CDN URL, conclusion length/numbers), index.html (generated), scripts/ralph/prd.json
+- **Learnings for future iterations:**
+  - HTML is built from a str.format template, so literal JS braces must be doubled ({{ }}); prefer that over adding a templating dependency.
+  - format_brl() gives pt-BR formatting ("R$ 1.234,56") for text; CSV output stays with dot decimals.
+  - Chart rendering itself (CDN load) not verified in a browser - manual check needed. Test suite now has 5 tests.
+  - US-004 README needs: 423 input rows, 420 output, gross total 939394.06, post-join 931274.06, 3 orphan sales (id_loja=999, R$ 8.120,00), store 108 Batel/PR without sales.
+---
