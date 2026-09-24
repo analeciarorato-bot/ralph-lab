@@ -7,6 +7,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 VENDAS_LOJAS_CSV = ROOT / "vendas_lojas.csv"
+PIVOT_RECEITA_CSV = ROOT / "pivot_receita.csv"
 
 EXPECTED_LINE_COUNT = 420
 EXPECTED_RECEITA_TOTAL = 931274.06
@@ -29,3 +30,19 @@ def test_vendas_lojas_receita_total():
     assert "receita_brl" in df.columns
     total = df["receita_brl"].sum()
     assert total == pytest.approx(EXPECTED_RECEITA_TOTAL, abs=TOLERANCE)
+
+
+def test_pivot_shape_and_header():
+    header = PIVOT_RECEITA_CSV.read_text(encoding="utf-8").splitlines()[0]
+    assert header == "regiao,2026-01,2026-02,2026-03,2026-04,2026-05,2026-06"
+    df = pd.read_csv(PIVOT_RECEITA_CSV)
+    assert df.shape == (4, 7)
+    assert list(df["regiao"]) == ["Centro-Oeste", "Nordeste", "Sudeste", "Sul"]
+
+
+def test_pivot_total_and_format():
+    df = pd.read_csv(PIVOT_RECEITA_CSV)
+    assert df.drop(columns="regiao").to_numpy().sum() == pytest.approx(EXPECTED_RECEITA_TOTAL, abs=TOLERANCE)
+    for line in PIVOT_RECEITA_CSV.read_text(encoding="utf-8").splitlines()[1:]:
+        for cell in line.split(",")[1:]:
+            assert len(cell.split(".")[1]) == 2

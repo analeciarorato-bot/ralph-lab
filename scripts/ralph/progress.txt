@@ -19,3 +19,12 @@ Started: Thu Sep 24 20:09:45     2026
   - Confirmed source CSVs (vendas.csv, lojas.csv) are untouched via `git diff --stat` after running the pipeline - no accidental mutation risk since pipeline.py only reads them with pd.read_csv.
   - Next story (US-002) will build pivot_receita.csv from vendas_lojas.csv; month needs to be extracted from the `data` column (format YYYY-MM-DD) via string slicing or pd.to_datetime().dt.strftime("%Y-%m").
 ---
+
+## [2026-09-24] - US-002
+- Added build_pivot_receita() to pipeline.py: month = `data` string sliced to YYYY-MM, pivot_table sum of receita_brl by regiao x mes, sorted by regiao; main() writes pivot_receita.csv (root) with float_format "%.2f" (rounding only on write).
+- Files changed: pipeline.py, tests/test_pipeline.py (2 new tests: shape/header, total/2-decimal format), pivot_receita.csv (generated)
+- **Learnings for future iterations:**
+  - The PRD's "265077.49" (Sudeste) is the row total across months, not a single cell; per-cell values are ~20k-48k. US-003 conclusion should compute regional totals by summing the pivot rows (Sudeste = 265077.49; grand total 931274.06).
+  - build_pivot_receita(vendas_lojas) returns a DataFrame with `regiao` as a regular column, so US-003 can reuse it directly for Chart.js datasets (one per row, labels = the month columns).
+  - Test suite now has 4 tests, meeting the PRD "at least 4 tests" bar.
+---

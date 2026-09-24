@@ -4,6 +4,7 @@ import pandas as pd
 VENDAS_CSV = "vendas.csv"
 LOJAS_CSV = "lojas.csv"
 VENDAS_LOJAS_CSV = "vendas_lojas.csv"
+PIVOT_RECEITA_CSV = "pivot_receita.csv"
 
 
 def load_vendas() -> pd.DataFrame:
@@ -20,9 +21,18 @@ def build_vendas_lojas() -> pd.DataFrame:
     return vendas.merge(lojas, on="id_loja", how="inner")
 
 
+def build_pivot_receita(vendas_lojas: pd.DataFrame) -> pd.DataFrame:
+    mes = vendas_lojas["data"].str[:7].rename("mes")
+    pivot = vendas_lojas.pivot_table(
+        index="regiao", columns=mes, values="receita_brl", aggfunc="sum", fill_value=0.0
+    )
+    return pivot.sort_index().reset_index().rename_axis(columns=None)
+
+
 def main() -> None:
     vendas_lojas = build_vendas_lojas()
     vendas_lojas.to_csv(VENDAS_LOJAS_CSV, index=False)
+    build_pivot_receita(vendas_lojas).to_csv(PIVOT_RECEITA_CSV, index=False, float_format="%.2f")
 
 
 if __name__ == "__main__":
