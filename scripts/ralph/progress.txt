@@ -1,0 +1,21 @@
+# Ralph Progress Log
+Started: Thu Sep 24 20:09:45     2026
+---
+
+## Codebase Patterns
+- pandas 3.0.6 and pytest 9.1.1 are installed globally; no venv/requirements.txt in this repo, just call `python`/`python -m pytest -q` directly.
+- pipeline.py functions are split into small, testable pieces (load_vendas, load_lojas, build_vendas_lojas, main) so tests/future stories can import and reuse them without re-running the whole pipeline from scratch.
+- tests/test_pipeline.py uses a module-scoped autouse fixture that runs `python pipeline.py` once via subprocess, then each test reads the generated CSV(s) fresh. Follow this pattern for US-002/US-003 tests instead of re-invoking the pipeline per test.
+- receita_brl must be read/cast as float64 explicitly (`.astype({"receita_brl": "float64"})`) - pandas 3.x can otherwise leave ambiguous dtypes.
+- id_loja is cast to int64 on both CSVs before merging so the inner join matches correctly.
+- Generated deliverables (vendas_lojas.csv, and later pivot_receita.csv, index.html) are committed to the repo root, not gitignored - they are PRD-required deliverables, not build artifacts.
+
+## [2026-09-24] - US-001
+- Implemented inner join of vendas.csv and lojas.csv by id_loja in pipeline.py; writes vendas_lojas.csv to repo root with 420 data rows and receita_brl as float64.
+- Files changed: pipeline.py (new), tests/test_pipeline.py (new), vendas_lojas.csv (generated output)
+- **Learnings for future iterations:**
+  - Verified vendas.csv has 423 data rows (3 orphan sales with id_loja=999) and lojas.csv has 8 stores (store 108/Batel/PR has no sales) - inner join correctly drops both, landing exactly on 420 rows as required by PRD.
+  - `wc -l vendas_lojas.csv` shows 421 (420 data rows + 1 header) - use this quick sanity check for row-count stories.
+  - Confirmed source CSVs (vendas.csv, lojas.csv) are untouched via `git diff --stat` after running the pipeline - no accidental mutation risk since pipeline.py only reads them with pd.read_csv.
+  - Next story (US-002) will build pivot_receita.csv from vendas_lojas.csv; month needs to be extracted from the `data` column (format YYYY-MM-DD) via string slicing or pd.to_datetime().dt.strftime("%Y-%m").
+---
