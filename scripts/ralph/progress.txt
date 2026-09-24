@@ -38,3 +38,11 @@ Started: Thu Sep 24 20:09:45     2026
   - Chart rendering itself (CDN load) not verified in a browser - manual check needed. Test suite now has 5 tests.
   - US-004 README needs: 423 input rows, 420 output, gross total 939394.06, post-join 931274.06, 3 orphan sales (id_loja=999, R$ 8.120,00), store 108 Batel/PR without sales.
 ---
+
+## [2026-09-24] - US-004
+- Added README.md (root) with how to run (`python pipeline.py`, `python -m pytest -q`), the inner join rationale, what it leaves out (3 orphan sales id_loja=999 = R$ 8.120,00; store 108 Batel/PR with no sales) and a table of rows/totals (423 -> 420, 939394.06 -> 931274.06).
+- Files changed: README.md (new), tests/test_pipeline.py (new test checking README content), scripts/ralph/prd.json
+- **Learnings for future iterations:**
+  - Numbers in README were re-verified with pandas against the CSVs (423 rows/939394.06 raw; 420 rows/931274.06 joined; orphans 3 rows/8120.00).
+  - Test suite now has 6 tests. All 4 stories pass. index.html chart still needs a manual browser check (CDN load not verified).
+---

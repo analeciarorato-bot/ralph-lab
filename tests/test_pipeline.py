@@ -61,3 +61,10 @@ def test_index_html_canvas_chartjs_and_conclusion():
     assert "Sudeste" in conclusao
     assert "R$ 265.077,49" in conclusao
     assert "R$ 931.274,06" in conclusao
+
+
+def test_readme_documents_join_decision():
+    readme = (INDEX_HTML.parent / "README.md").read_text(encoding="utf-8")
+    for expected in ("python pipeline.py", "python -m pytest -q", "inner join", "999",
+                     "R$ 8.120,00", "108", "Batel", "423", "420", "939394.06", "931274.06"):
+        assert expected in readme
