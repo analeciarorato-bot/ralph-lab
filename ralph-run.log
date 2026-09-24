@@ -1,0 +1,48 @@
+Starting Ralph - Tool: claude - Max iterations: 10
+
+===============================================================
+  Ralph Iteration 1 of 10 (claude)
+===============================================================
+Committed US-001 (inner join of vendas.csv and lojas.csv → vendas_lojas.csv, 420 rows, R$931,274.06 total), with 2 passing pytest tests. Stories US-002, US-003, and US-004 still have `passes: false`, so another iteration is needed.
+Iteration 1 complete. Continuing...
+
+===============================================================
+  Ralph Iteration 2 of 10 (claude)
+===============================================================
+US-002 is committed (7aaaab3) and marked `passes: true` in `prd.json`. `pipeline.py` now writes `pivot_receita.csv` (regions × months), and `python -m pytest -q` passes with 4 tests.
+
+I added two tests: one for the header and the 4 × 7 shape, one for the total and the two-decimal format. The pivot total matches the expected 931274.06. The PRD's example value 265077.49 is the Sudeste total across all months, not a single cell, so I noted that in `progress.txt` for US-003.
+
+`ralph-run.log` is still untracked and I left it out of the commit. US-003 and US-004 still have `passes: false`, so another iteration is needed.
+Iteration 2 complete. Continuing...
+
+===============================================================
+  Ralph Iteration 3 of 10 (claude)
+===============================================================
+US-003 is committed (aae3863) and marked `passes: true` in `prd.json`. `python -m pytest -q` passes with 5 tests.
+
+- **`index.html`:** `pipeline.py` now generates it at the repo root. It has a `<canvas>` with a Chart.js line chart loaded from the jsdelivr CDN, one line per region and months on the X axis, with the pivot data embedded.
+- **Conclusion:** the `<p>` is about 480 characters, built from the pivot totals. It cites Sudeste as the leader at R$ 265.077,49 and a total of R$ 931.274,06, plus the smallest region, the best and worst months, and the join caveat.
+- **New test:** it checks that `index.html` exists, has a `<canvas>` and the CDN URL, and that the conclusion is at least 300 characters and contains those figures.
+- **Not verified in a browser:** I didn't load the chart, so that needs a manual check.
+- **Left untracked:** `ralph-run.log`.
+
+US-004 (README) still has `passes: false`, so another iteration is needed.
+Iteration 3 complete. Continuing...
+
+===============================================================
+  Ralph Iteration 4 of 10 (claude)
+===============================================================
+US-004 is committed (42f3c7b) and marked `passes: true` in `prd.json`. `python -m pytest -q` passes with 6 tests.
+
+- **`README.md`:** it covers how to run the pipeline and the tests, and why the join is an inner join. It lists what the join left out: the 3 orphan sales (`id_loja=999`, R$ 8.120,00) and store 108 (Batel/PR), which has no sales. It also reports 423 input rows, 420 output rows, R$ 939394.06 before the join and R$ 931274.06 after. I re-checked all of these against the CSVs with pandas.
+- **New test:** it checks that the README contains those key terms and figures.
+- **Not verified in a browser:** the Chart.js chart in `index.html` still needs a manual check.
+- **Left untracked:** `ralph-run.log`.
+
+All four stories now have `passes: true`.
+
+<promise>COMPLETE</promise>
+
+Ralph completed all tasks!
+Completed at iteration 4 of 10
