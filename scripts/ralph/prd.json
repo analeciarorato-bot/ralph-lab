@@ -1,0 +1,70 @@
+{
+  "project": "ralph-lab",
+  "branchName": "main",
+  "description": "Pipeline de vendas: inner join de vendas.csv com lojas.csv por id_loja, pivot de receita por regiao x mes e pagina index.html com grafico Chart.js e conclusao. Pronto = python -m pytest -q verde com pelo menos 4 testes. Restricoes: nao apagar linhas problematicas dos CSVs de origem, nao inventar dados, ler receita_brl como numero. Armadilhas: 3 vendas orfas com id_loja=999 (R$ 8.120,00) e a loja 108 (Batel/PR) sem vendas; ambas ficam fora do inner join e devem ser documentadas no README.md.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Inner join de vendas com lojas",
+      "description": "Como analista, quero juntar vendas.csv e lojas.csv por id_loja para ter a regiao de cada venda.",
+      "acceptanceCriteria": [
+        "Script pipeline.py na raiz le os dois CSVs com pandas; receita_brl e lida como numero (float), nunca como texto",
+        "Faz inner join por id_loja e grava vendas_lojas.csv na RAIZ do repositorio",
+        "vendas_lojas.csv tem exatamente 420 linhas de dados e mantem a coluna com o nome exato receita_brl",
+        "A soma de receita_brl em vendas_lojas.csv e 931274.06 (tolerancia 0.50)",
+        "Nao apaga nem edita linhas de vendas.csv ou lojas.csv",
+        "tests/test_pipeline.py tem testes para o numero de linhas (420) e para a receita total",
+        "python -m pytest -q passa"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Pivot de receita por regiao x mes",
+      "description": "Como gestor, quero ver a receita de cada regiao em cada mes para comparar o desempenho.",
+      "acceptanceCriteria": [
+        "pipeline.py gera pivot_receita.csv na RAIZ, a partir do inner join",
+        "Cabecalho exato: regiao,2026-01,2026-02,2026-03,2026-04,2026-05,2026-06",
+        "4 linhas de dados (Centro-Oeste, Nordeste, Sudeste, Sul) em ordem alfabetica, 7 colunas",
+        "Valores com ponto decimal e 2 casas (ex.: 265077.49), sem R$ e sem separador de milhar; arredondar so na escrita",
+        "A soma de todas as celulas numericas e 931274.06 (tolerancia 0.50)",
+        "Teste da forma do pivot (4 x 7, cabecalho exato) e do total",
+        "python -m pytest -q passa"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Pagina com grafico e conclusao",
+      "description": "Como gestor, quero uma pagina que mostre a evolucao da receita mensal por regiao e diga o que os numeros significam.",
+      "acceptanceCriteria": [
+        "pipeline.py gera index.html na RAIZ, com os dados do pivot embutidos",
+        "A pagina tem um <canvas> com grafico de linhas Chart.js carregado de https://cdn.jsdelivr.net/npm/chart.js, uma linha por regiao, eixo X = meses",
+        "A pagina tem um <p> de conclusao com pelo menos 300 caracteres, citando a regiao lider (Sudeste, R$ 265.077,49) e a receita total, com numeros calculados dos dados, nao inventados",
+        "Teste que confere que index.html existe, contem <canvas e um <p> com 300+ caracteres",
+        "python -m pytest -q passa"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "README com a decisao do join",
+      "description": "Como leitor do relatorio, quero saber quais dados ficaram de fora e por que.",
+      "acceptanceCriteria": [
+        "README.md na raiz explica como rodar (python pipeline.py e python -m pytest -q)",
+        "Explica a escolha do inner join e o que ele deixou de fora: as 3 vendas orfas (id_loja = 999, R$ 8.120,00) e a loja 108 (Batel/PR, sem vendas)",
+        "Reporta linhas de entrada (423) e de saida (420), receita total bruta (939394.06) e apos o join (931274.06)",
+        "python -m pytest -q passa"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
